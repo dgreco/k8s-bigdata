@@ -1,0 +1,26 @@
+proxy:
+  secretToken: "022546121614ce9cfdb2056506a543d3128e7d2f1ae8e11eb51acd12e7769616"
+  
+singleuser:
+  defaultUrl: "/lab"
+  image:
+    name: jupyter/minimal-notebook
+    tag: latest
+  profileList:
+    - display_name: "Minimal Python environment"
+      description: ""
+      default: true
+    - display_name: "PySpark environment"
+      description: ""
+      kubespawner_override:
+        image: jupyter/pyspark-notebook:latest
+  storage:
+    capacity: 2Gi
+    dynamic:
+      storageClass: openebs-hostpath
+
+hub:
+  db:
+    type: sqlite-pvc
+    pvc:
+      storageClassName: openebs-hostpath
