@@ -18,6 +18,16 @@ singleuser:
     capacity: 2Gi
     dynamic:
       storageClass: openebs-hostpath
+    extraVolumes:
+      - name: config-volume
+        configMap:
+          name: kube-config
+    extraVolumeMounts:
+      - name: config-volume
+        mountPath: /etc/config
+  extraEnv:
+    KUBECONFIG: "/etc/config/config"
+    HTTP2_DISABLE: "true"
 
 hub:
   db:
