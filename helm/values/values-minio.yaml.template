@@ -76,7 +76,7 @@ bucketRoot: ""
 # Number of drives attached to a node
 drivesPerNode: 1
 # Number of MinIO containers running
-replicas: 4
+replicas: {{minio_replicas}}
 # Number of expanded MinIO clusters
 zones: 1
 
@@ -108,7 +108,7 @@ persistence:
   ##
   ## Storage class of PV to bind. By default it looks for standard storage class.
   ## If the PV uses a different storage class, specify that here.
-  storageClass: "openebs-hostpath"
+  storageClass: {{minio_storageClass}}
   VolumeName: ""
   accessMode: ReadWriteOnce
   size: 100Gi

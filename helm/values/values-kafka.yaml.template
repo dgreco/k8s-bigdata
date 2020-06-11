@@ -38,7 +38,7 @@ cp-zookeeper:
 ## ------------------------------------------------------
 cp-kafka:
   enabled: true
-  brokers: 4
+  brokers: {{kafka_brokers_count}}
   image: confluentinc/cp-enterprise-kafka
   imageTag: 5.4.1
   ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
@@ -48,7 +48,7 @@ cp-kafka:
   heapOptions: "-Xms512M -Xmx512M"
   persistence:
     enabled: true
-    storageClass: "openebs-hostpath"
+    storageClass: {{kafka_storageClass}}
     size: 5Gi
     disksPerBroker: 1
   resources: {}

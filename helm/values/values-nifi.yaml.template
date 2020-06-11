@@ -1,6 +1,6 @@
 ---
 # Number of nifi nodes
-replicaCount: 4
+replicaCount: {{nifi_replicaCount}}
 
 ## Set default image, imageTag, and imagePullPolicy. 
 ## ref: https://hub.docker.com/r/apache/nifi/
@@ -119,7 +119,7 @@ persistence:
   #
   # To use a storage class that already exists on the Kubernetes cluster, we can simply reference it by name.
   # For example:
-  storageClass: openebs-hostpath
+  storageClass: {{nifi_storageClass}}
   #
   # The default storage class is used if this variable is not set.
 

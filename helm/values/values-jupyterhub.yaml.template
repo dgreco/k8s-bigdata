@@ -17,7 +17,7 @@ singleuser:
   storage:
     capacity: 2Gi
     dynamic:
-      storageClass: openebs-hostpath
+      storageClass: {{jupyterhub_storageClass}}
     extraVolumes:
       - name: config-volume
         configMap:

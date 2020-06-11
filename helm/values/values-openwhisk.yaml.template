@@ -149,7 +149,7 @@ k8s:
   persistence:
     enabled: true
     hasDefaultStorageClass: false
-    explicitStorageClass: openebs-hostpath
+    explicitStorageClass: {{openwhisk_storageClass}}
 
 # Images used to run auxillary tasks/jobs
 utility:

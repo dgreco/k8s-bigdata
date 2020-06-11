@@ -61,7 +61,7 @@ localprovisioner:
   image: "openebs/provisioner-localpv"
   imageTag: "1.10.0"
   replicas: 1
-  basePath: "/data"
+  basePath: {{openebs_localprovisioner_basePath}}
   nodeSelector: {}
   tolerations: []
   affinity: {}

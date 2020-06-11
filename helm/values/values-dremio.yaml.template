@@ -22,7 +22,7 @@ coordinator:
 executor:
   memory: 4096
   cpu: 1
-  count: 4
+  count: {{dremio_executor_count}}
   volumeSize: 10Gi
   cloudCache:
     # Requires Dremio version 4.0.0 or later
@@ -77,7 +77,7 @@ serviceType: LoadBalancer
 
 # To use custom storage class, uncomment and provide the value here.
 # Otherwise the default storage class configured for your K8S cluster is used.
-storageClass: openebs-hostpath
+storageClass: {{dremio_storageClass}}
 
 # For private and protected docker image repository, you should store
 # the credentials in a kubernetes secret and provide the secret name
