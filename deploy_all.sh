@@ -36,6 +36,12 @@ sleep 10
 
 echo deployed openwhisk ...
 
+sleep 10
+
+(cd ./helm/jupyterhub;./deploy.sh)
+
+echo deployed jupyterhub ...
+
 
 
 
