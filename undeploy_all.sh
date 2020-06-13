@@ -1,5 +1,5 @@
 #!/bin/bash
-(cd ./helm/jupyterhub;./jupyterhub.sh)
+(cd ./helm/jupyterhub;./undeploy.sh)
 
 (cd ./helm/openwhisk;./undeploy.sh)
 
