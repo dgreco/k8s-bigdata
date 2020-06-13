@@ -1,22 +1,22 @@
 #Openebs
-openebs_localprovisioner_basePath="/data"
+openebs_localprovisioner_basePath="/data"               # This is a directory where all the PV will be automatically created, all the nodes belonging to the cluster should have this directory available
 
 #Minio
-minio_storageClass="openebs-hostpath"
-minio_replicas="4"
-minio_accessKey="AKaHEgQ4II0S7BjT6DjAUDA4BX"
-minio_secretKey="SKFzHq5iDoQgF7gyPYRFhzNMYSvY6ZFMpH"
+minio_storageClass="openebs-hostpath"                   # This storage class allows the automatic creation of PVC to PV created by Openebs
+minio_replicas="4"                                      # The number of minio replicas
+minio_accessKey="AKaHEgQ4II0S7BjT6DjAUDA4BX"            # The S3 like access key
+minio_secretKey="SKFzHq5iDoQgF7gyPYRFhzNMYSvY6ZFMpH"    # The S3 like secret key
 
 #Kafka
-kafka_brokers_count="4"
+kafka_brokers_count="4"                                 # The number of kafka brokers
 kafka_storageClass="openebs-hostpath"
 
 #NiFi
-nifi_replicaCount="4"
+nifi_replicaCount="4"                                   # The number of NiFi cluster replicas
 nifi_storageClass="openebs-hostpath"
 
 #Dremio
-dremio_executor_count="4"
+dremio_executor_count="4"                               # The number of Dremio executor
 dremio_storageClass="openebs-hostpath"
 
 #Jupyterhub
