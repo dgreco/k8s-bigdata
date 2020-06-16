@@ -24,3 +24,9 @@ jupyterhub_storageClass="openebs-hostpath"
 
 #Openwhisk
 openwhisk_storageClass="openebs-hostpath"
+
+#Airflow
+airflow_storageClass="openebs-hostpath"
+airflow_git_url="git@gitlab.davidgreco.it:dgreco/dags.git"
+airflow_git_keys="airflow-git-keys"
+airflow_git_repoHost="gitlab.davidgreco.it"

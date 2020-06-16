@@ -42,6 +42,12 @@ sleep 10
 
 echo deployed jupyterhub ...
 
+sleep 10
+
+(cd ./helm/airflow;./deploy.sh)
+
+echo deployed airflow ...
+
 
 
 
