@@ -1,3 +1,6 @@
+#Docker
+docker_registry="nexus.davidgreco.it:5000"
+
 #Openebs
 openebs_localprovisioner_basePath="/data"               # This is a directory where all the PV will be automatically created, all the nodes belonging to the cluster should have this directory available
 

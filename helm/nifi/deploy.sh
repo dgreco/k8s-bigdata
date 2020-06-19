@@ -7,6 +7,8 @@ then
   kubectl create namespace nifi
 fi
 
+../../scripts/templater.sh ../values/values-nifi.yaml.template -s -f ../../config > ../values/values-nifi.yaml
+
 helm repo add cetic https://cetic.github.io/helm-charts
 helm repo update
 

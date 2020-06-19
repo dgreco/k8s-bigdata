@@ -7,6 +7,8 @@ then
   kubectl create namespace minio
 fi
 
+../../scripts/templater.sh ../values/values-minio.yaml.template -s -f ../../config > ../values/values-minio.yaml
+
 helm repo update
 
 if [ $(helm list --namespace minio | wc -l) -eq 1 ]

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-(cd ./helm/values;./render_template.sh)
-
 (cd ./helm/openebs;./deploy.sh)
 
 echo deployed openebs ...

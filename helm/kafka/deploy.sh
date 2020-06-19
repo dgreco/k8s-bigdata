@@ -7,6 +7,8 @@ then
   kubectl create namespace kafka
 fi
 
+../../scripts/templater.sh ../values/values-kafka.yaml.template -s -f ../../config > ../values/values-kafka.yaml
+
 helm repo add confluentinc https://confluentinc.github.io/cp-helm-charts/
 helm repo update
 
