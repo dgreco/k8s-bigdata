@@ -9,5 +9,6 @@ fi
 
 ../../scripts/templater.sh ../values/values-openebs.yaml.template -s -f ../../config > ../values/values-openebs.yaml
 
+helm repo add openebs https://openebs.github.io/charts
 helm repo update
-helm install openebs stable/openebs --namespace openebs -f ../values/values-openebs.yaml
+helm install openebs openebs/openebs --namespace openebs -f ../values/values-openebs.yaml

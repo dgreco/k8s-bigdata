@@ -13,16 +13,15 @@ serviceAccount:
 
 release:
   # "openebs.io/version" label for control plane components
-  version: "1.10.0"
+  version: "1.6.0"
 
 image:
   pullPolicy: IfNotPresent
-  repository: ""
 
 apiserver:
   enabled: true
-  image: "openebs/m-apiserver"
-  imageTag: "1.10.0"
+  image: "quay.io/openebs/m-apiserver"
+  imageTag: "1.6.0"
   replicas: 1
   ports:
     externalPort: 5656
@@ -39,15 +38,15 @@ apiserver:
 defaultStorageConfig:
   enabled: "true"
 
-# Directory used by the OpenEBS to store debug information and so forth
-# that are generated in the course of running OpenEBS containers.
-varDirectoryPath:
+persistentStoragePath:
+  # baseDir is the value used to store openebs related files in this base
+  # directory
   baseDir: "/var/openebs"
 
 provisioner:
   enabled: true
-  image: "openebs/openebs-k8s-provisioner"
-  imageTag: "1.10.0"
+  image: "quay.io/openebs/openebs-k8s-provisioner"
+  imageTag: "1.6.0"
   replicas: 1
   nodeSelector: {}
   tolerations: []
@@ -58,8 +57,8 @@ provisioner:
 
 localprovisioner:
   enabled: true
-  image: "openebs/provisioner-localpv"
-  imageTag: "1.10.0"
+  image: "quay.io/openebs/provisioner-localpv"
+  imageTag: "1.6.0"
   replicas: 1
   basePath: {{openebs_localprovisioner_basePath}}
   nodeSelector: {}
@@ -72,11 +71,11 @@ localprovisioner:
 snapshotOperator:
   enabled: true
   controller:
-    image: "openebs/snapshot-controller"
-    imageTag: "1.10.0"
+    image: "quay.io/openebs/snapshot-controller"
+    imageTag: "1.6.0"
   provisioner:
-    image: "openebs/snapshot-provisioner"
-    imageTag: "1.10.0"
+    image: "quay.io/openebs/snapshot-provisioner"
+    imageTag: "1.6.0"
   replicas: 1
   upgradeStrategy: "Recreate"
   nodeSelector: {}
@@ -88,8 +87,8 @@ snapshotOperator:
 
 ndm:
   enabled: true
-  image: "openebs/node-disk-manager-amd64"
-  imageTag: "0.5.0"
+  image: "quay.io/openebs/node-disk-manager-amd64"
+  imageTag: "v0.4.6"
   sparse:
     path: "/var/openebs/sparse"
     size: "10737418240"
@@ -111,15 +110,12 @@ ndm:
 
 ndmOperator:
   enabled: true
-  image: "openebs/node-disk-operator-amd64"
-  imageTag: "0.5.0"
+  image: "quay.io/openebs/node-disk-operator-amd64"
+  imageTag: "v0.4.6"
   replicas: 1
   upgradeStrategy: Recreate
   nodeSelector: {}
   tolerations: []
-  healthCheck:
-    initialDelaySeconds: 30
-    periodSeconds: 60
   readinessCheck:
     initialDelaySeconds: 4
     periodSeconds: 10
@@ -127,55 +123,43 @@ ndmOperator:
 
 webhook:
   enabled: true
-  image: "openebs/admission-server"
-  imageTag: "1.10.0"
+  image: "quay.io/openebs/admission-server"
+  imageTag: "1.6.0"
   failurePolicy: Ignore
   replicas: 1
-  healthCheck:
-    initialDelaySeconds: 30
-    periodSeconds: 60
   nodeSelector: {}
   tolerations: []
   affinity: {}
 
 jiva:
-  image: "openebs/jiva"
-  imageTag: "1.10.0"
+  image: "quay.io/openebs/jiva"
+  imageTag: "1.6.0"
   replicas: 3
   defaultStoragePath: "/var/openebs"
 
 cstor:
   pool:
-    image: "openebs/cstor-pool"
-    imageTag: "1.10.0"
+    image: "quay.io/openebs/cstor-pool"
+    imageTag: "1.6.0"
   poolMgmt:
-    image: "openebs/cstor-pool-mgmt"
-    imageTag: "1.10.0"
+    image: "quay.io/openebs/cstor-pool-mgmt"
+    imageTag: "1.6.0"
   target:
-    image: "openebs/cstor-istgt"
-    imageTag: "1.10.0"
+    image: "quay.io/openebs/cstor-istgt"
+    imageTag: "1.6.0"
   volumeMgmt:
-    image: "openebs/cstor-volume-mgmt"
-    imageTag: "1.10.0"
+    image: "quay.io/openebs/cstor-volume-mgmt"
+    imageTag: "1.6.0"
 
 helper:
-  image: "openebs/linux-utils"
-  imageTag: "1.10.0"
-
-featureGates:
-  enabled: false
-  GPTBasedUUID:
-    enabled: false
-    featureGateFlag: "GPTBasedUUID"
-
-crd:
-  enableInstall: true
+  image: "quay.io/openebs/linux-utils"
+  imageTag: "1.6.0"
 
 policies:
   monitoring:
     enabled: true
-    image: "openebs/m-exporter"
-    imageTag: "1.10.0"
+    image: "quay.io/openebs/m-exporter"
+    imageTag: "1.6.0"
 
 analytics:
   enabled: true
