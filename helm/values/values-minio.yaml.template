@@ -14,7 +14,7 @@ clusterDomain: cluster.local
 ##
 image:
   repository: minio/minio
-  tag: RELEASE.2020-04-28T23-56-56Z
+  tag: RELEASE.2020-10-18T21-54-12Z
   pullPolicy: IfNotPresent
 
 ## Set default image, imageTag, and imagePullPolicy for the `mc` (the minio
@@ -22,7 +22,7 @@ image:
 ##
 mcImage:
   repository: minio/mc
-  tag: RELEASE.2020-04-25T00-43-23Z
+  tag: RELEASE.2020-10-03T02-54-56Z
   pullPolicy: IfNotPresent
 
 ## Set default image, imageTag, and imagePullPolicy for the `jq` (the JSON
@@ -61,12 +61,28 @@ priorityClassName: ""
 ## AccessKey and secretKey is generated when not set
 ## Distributed Minio ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
 ##
-existingSecret: ""
-accessKey: "AKaHEgQ4II0S7BjT6DjAUDA4BX"
-secretKey: "SKFzHq5iDoQgF7gyPYRFhzNMYSvY6ZFMpH"
+accessKey: {{minio_accessKey}}
+secretKey: {{minio_secretKey}}
 certsPath: "/etc/minio/certs/"
 configPathmc: "/etc/minio/mc/"
 mountPath: "/export"
+
+## Use existing Secret that store following variables:
+##
+## | Chart var             | .data.<key> in Secret    |
+## |:----------------------|:-------------------------|
+## | accessKey             | accesskey                |
+## | secretKey             | secretkey                |
+## | gcsgateway.gcsKeyJson | gcs_key.json             |
+## | s3gateway.accessKey   | awsAccessKeyId           |
+## | s3gateway.secretKey   | awsSecretAccessKey       |
+## | etcd.clientCert       | etcd_client_cert.pem     |
+## | etcd.clientCertKey    | etcd_client_cert_key.pem |
+##
+## All mentioned variables will be ignored in values file.
+## .data.accesskey and .data.secretkey are mandatory,
+## others depend on enabled status of corresponding sections.
+existingSecret: ""
 
 ## Override the root directory which the minio server should serve from.
 ## If left empty, it defaults to the value of {{ .Values.mountPath }}
@@ -87,6 +103,12 @@ tls:
   certSecret: ""
   publicCrt: public.crt
   privateKey: private.key
+
+## Trusted Certificates Settings for Minio. Ref: https://docs.minio.io/docs/how-to-secure-access-to-minio-server-with-tls#install-certificates-from-third-party-cas
+## Bundle multiple trusted certificates into one secret and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
+## When using self-signed certificates, remember to include Minio's own certificate in the bundle with key public.crt.
+## If certSecret is left empty and tls is enabled, this chart installs the public certificate from .Values.tls.certSecret.
+trustedCertsSecret: ""
 
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
@@ -109,9 +131,9 @@ persistence:
   ## Storage class of PV to bind. By default it looks for standard storage class.
   ## If the PV uses a different storage class, specify that here.
   storageClass: {{minio_storageClass}}
-  VolumeName: ""
+  #VolumeName: ""
   accessMode: ReadWriteOnce
-  size: 100Gi
+  size: 50Gi
 
   ## If subPath is set mount a sub folder of a volume instead of the root of the volume.
   ## This is especially handy for volume plugins that don't natively support sub mounting (like glusterfs).
@@ -127,7 +149,7 @@ service:
   type: ClusterIP
   clusterIP: ~
   port: 9000
-  nodePort: 31311
+  nodePort: 32000
 
   ## List of IP addresses at which the Prometheus server service is available
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
@@ -142,6 +164,9 @@ service:
 
 ## Configure Ingress based on the documentation here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ##
+
+imagePullSecrets: []
+# - name: "image-pull-secret"
 
 ingress:
   enabled: false
@@ -185,28 +210,12 @@ podAnnotations: {}
 # Additional pod labels
 podLabels: {}
 
-## Liveness and Readiness probe values.
-## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
-livenessProbe:
-  initialDelaySeconds: 5
-  periodSeconds: 30
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 3
-readinessProbe:
-  initialDelaySeconds: 60
-  periodSeconds: 15
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 3
-
 ## Configure resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
 ##
 resources:
   requests:
-    memory: 256Mi
-    cpu: 250m
+    memory: 4Gi
 
 ## Create a bucket after minio install
 ##
@@ -218,6 +227,8 @@ defaultBucket:
   policy: none
   ## Purge if bucket exists already
   purge: false
+  ## set versioning for bucket true|false
+  # versioning: false
 
 ## Create multiple buckets after minio install
 ## Enabling `defaultBucket` will take priority over this list
@@ -232,11 +243,26 @@ buckets: []
 
 ## Additional Annotations for the Kubernetes Batch (make-bucket-job)
 makeBucketJob:
+  podAnnotations:
   annotations:
+  securityContext:
+    enabled: false
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  resources:
+    requests:
+      memory: 128Mi
 
 ## Additional Annotations for the Kubernetes Batch (update-prometheus-secret)
 updatePrometheusJob:
+  podAnnotations:
   annotations:
+  securityContext:
+    enabled: false
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
 s3gateway:
   enabled: false
@@ -264,12 +290,6 @@ gcsgateway:
   # Google cloud project-id
   projectId: ""
 
-ossgateway:
-  enabled: false
-  # Number of parallel instances
-  replicas: 4
-  endpointURL: ""
-
 ## Use minio on NAS backend
 ## https://docs.minio.io/docs/minio-gateway-for-nas
 
@@ -280,13 +300,6 @@ nasgateway:
   # For NAS Gateway, you may want to bind the PVC to a specific PV. To ensure that happens, PV to bind to should have
   # a label like "pv: <value>", use value here.
   pv: ~
-
-## Use minio as Backblaze B2 gateway
-## https://github.com/minio/minio/blob/master/docs/gateway/b2.md
-b2gateway:
-  enabled: false
-  # Number of parallel instances
-  replicas: 4
 
 ## Use this field to add environment variables relevant to Minio server. These fields will be passed on to Minio container(s)
 ## when Chart is deployed
@@ -322,10 +335,10 @@ metrics:
     # scrapeTimeout: 10s
 
 ## ETCD settings: https://github.com/minio/minio/blob/master/docs/sts/etcd.md
+## Define endpoints to enable this section.
 etcd:
   endpoints: []
   pathPrefix: ""
   corednsPathPrefix: ""
   clientCert: ""
   clientCertKey: ""
-
