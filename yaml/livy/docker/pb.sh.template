@@ -1,5 +1,0 @@
-#!/bin/bash
-
-docker build -t {{docker_registry}}/livy:0.7.0 -f Dockerfile
-
-docker push {{docker_registry}}/livy:0.7.0
