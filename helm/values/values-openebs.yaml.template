@@ -11,17 +11,21 @@ serviceAccount:
   create: true
   name:
 
+imagePullSecrets:
+  #  - name: image-pull-secret
+
 release:
   # "openebs.io/version" label for control plane components
-  version: "1.6.0"
+  version: "2.5.0"
 
 image:
   pullPolicy: IfNotPresent
+  repository: ""
 
 apiserver:
   enabled: true
-  image: "quay.io/openebs/m-apiserver"
-  imageTag: "1.6.0"
+  image: "openebs/m-apiserver"
+  imageTag: "2.5.0"
   replicas: 1
   ports:
     externalPort: 5656
@@ -34,49 +38,99 @@ apiserver:
   healthCheck:
     initialDelaySeconds: 30
     periodSeconds: 60
+  ## apiserver resource requests and limits
+  ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 500m
+    #   memory: 1Gi
+
 
 defaultStorageConfig:
   enabled: "true"
 
-persistentStoragePath:
-  # baseDir is the value used to store openebs related files in this base
-  # directory
+# Directory used by the OpenEBS to store debug information and so forth
+# that are generated in the course of running OpenEBS containers.
+varDirectoryPath:
   baseDir: "/var/openebs"
 
 provisioner:
   enabled: true
-  image: "quay.io/openebs/openebs-k8s-provisioner"
-  imageTag: "1.6.0"
+  image: "openebs/openebs-k8s-provisioner"
+  imageTag: "2.5.0"
   replicas: 1
+  enableLeaderElection: true
+  patchJivaNodeAffinity: enabled
   nodeSelector: {}
   tolerations: []
   affinity: {}
   healthCheck:
     initialDelaySeconds: 30
     periodSeconds: 60
+  ## provisioner resource requests and limits
+  ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 500m
+    #   memory: 1Gi
 
 localprovisioner:
   enabled: true
-  image: "quay.io/openebs/provisioner-localpv"
-  imageTag: "1.6.0"
+  image: "openebs/provisioner-localpv"
+  imageTag: "2.5.0"
   replicas: 1
-  basePath: {{openebs_localprovisioner_basePath}}
+  enableLeaderElection: true
+  basePath: "{{openebs_localprovisioner_basePath}}"
   nodeSelector: {}
   tolerations: []
   affinity: {}
   healthCheck:
     initialDelaySeconds: 30
     periodSeconds: 60
+  ## localprovisioner resource requests and limits
+  ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 500m
+    #   memory: 1Gi
 
 snapshotOperator:
   enabled: true
   controller:
-    image: "quay.io/openebs/snapshot-controller"
-    imageTag: "1.6.0"
+    image: "openebs/snapshot-controller"
+    imageTag: "2.5.0"
+    ## snapshot controller resource requests and limits
+    ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+    resources: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 500m
+      #   memory: 1Gi
   provisioner:
-    image: "quay.io/openebs/snapshot-provisioner"
-    imageTag: "1.6.0"
+    image: "openebs/snapshot-provisioner"
+    imageTag: "2.5.0"
+    ## snapshot provisioner resource requests and limits
+    ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+    resources: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 500m
+      #   memory: 1Gi
   replicas: 1
+  enableLeaderElection: true
   upgradeStrategy: "Recreate"
   nodeSelector: {}
   tolerations: []
@@ -87,8 +141,8 @@ snapshotOperator:
 
 ndm:
   enabled: true
-  image: "quay.io/openebs/node-disk-manager-amd64"
-  imageTag: "v0.4.6"
+  image: "openebs/node-disk-manager"
+  imageTag: "1.1.0"
   sparse:
     path: "/var/openebs/sparse"
     size: "10737418240"
@@ -99,7 +153,7 @@ ndm:
     excludeVendors: "CLOUDBYT,OpenEBS"
     enablePathFilter: true
     includePaths: ""
-    excludePaths: "loop,fd0,sr0,/dev/ram,/dev/dm-,/dev/md"
+    excludePaths: "/dev/loop,/dev/fd0,/dev/sr0,/dev/ram,/dev/dm-,/dev/md,/dev/rbd,/dev/zd"
   probes:
     enableSeachest: false
   nodeSelector: {}
@@ -107,61 +161,112 @@ ndm:
   healthCheck:
     initialDelaySeconds: 30
     periodSeconds: 60
+  ## ndm resource requests and limits
+  ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 500m
+    #   memory: 1Gi
 
 ndmOperator:
   enabled: true
-  image: "quay.io/openebs/node-disk-operator-amd64"
-  imageTag: "v0.4.6"
+  image: "openebs/node-disk-operator"
+  imageTag: "1.1.0"
   replicas: 1
   upgradeStrategy: Recreate
   nodeSelector: {}
   tolerations: []
+  healthCheck:
+    initialDelaySeconds: 30
+    periodSeconds: 60
   readinessCheck:
     initialDelaySeconds: 4
     periodSeconds: 10
     failureThreshold: 1
+  ## ndmOperator resource requests and limits
+  ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 500m
+    #   memory: 1Gi
 
 webhook:
   enabled: true
-  image: "quay.io/openebs/admission-server"
-  imageTag: "1.6.0"
-  failurePolicy: Ignore
+  image: "openebs/admission-server"
+  imageTag: "2.5.0"
+  failurePolicy: "Fail"
   replicas: 1
+  healthCheck:
+    initialDelaySeconds: 30
+    periodSeconds: 60
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  hostNetwork: false
+  ## admission-server resource requests and limits
+  ## Reference: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 1Gi
+    # requests:
+    #   cpu: 250m
+    #   memory: 500Mi
 
 jiva:
-  image: "quay.io/openebs/jiva"
-  imageTag: "1.6.0"
+  image: "openebs/jiva"
+  imageTag: "2.5.0"
   replicas: 3
   defaultStoragePath: "/var/openebs"
 
 cstor:
   pool:
-    image: "quay.io/openebs/cstor-pool"
-    imageTag: "1.6.0"
+    image: "openebs/cstor-pool"
+    imageTag: "2.5.0"
   poolMgmt:
-    image: "quay.io/openebs/cstor-pool-mgmt"
-    imageTag: "1.6.0"
+    image: "openebs/cstor-pool-mgmt"
+    imageTag: "2.5.0"
   target:
-    image: "quay.io/openebs/cstor-istgt"
-    imageTag: "1.6.0"
+    image: "openebs/cstor-istgt"
+    imageTag: "2.5.0"
   volumeMgmt:
-    image: "quay.io/openebs/cstor-volume-mgmt"
-    imageTag: "1.6.0"
+    image: "openebs/cstor-volume-mgmt"
+    imageTag: "2.5.0"
 
 helper:
-  image: "quay.io/openebs/linux-utils"
-  imageTag: "1.6.0"
+  image: "openebs/linux-utils"
+  imageTag: "2.5.0"
+
+featureGates:
+  enabled: true
+  GPTBasedUUID:
+    enabled: true
+    featureGateFlag: "GPTBasedUUID"
+  APIService:
+    enabled: false
+    featureGateFlag: "APIService"
+    address: "0.0.0.0:9115"
+  UseOSDisk:
+    enabled: false
+    featureGateFlag: "UseOSDisk"
+
+crd:
+  enableInstall: true
 
 policies:
   monitoring:
     enabled: true
-    image: "quay.io/openebs/m-exporter"
-    imageTag: "1.6.0"
+    image: "openebs/m-exporter"
+    imageTag: "2.5.0"
 
 analytics:
   enabled: true
   # Specify in hours the duration after which a ping event needs to be sent.
   pingInterval: "24h"
+
