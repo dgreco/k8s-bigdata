@@ -1,9 +1,0 @@
-kubectl label nodes --all openwhisk-role=invoker
-
-kubectl create namespace openwhisk
-
-helm install owdev ./helm/openwhisk -n openwhisk -f values.yaml
-
-helm uninstall owdev -n openwhisk
-
-kubectl delete namespace openwhisk

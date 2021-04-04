@@ -12,12 +12,6 @@ echo deployed minio ...
 
 sleep 10
 
-(cd ./helm/dremio;./deploy.sh)
-
-echo deployed dremio ...
-
-sleep 10
-
 (cd ./helm/kafka;./deploy.sh)
 
 echo deployed kafka ...
@@ -30,22 +24,9 @@ echo deployed nifi ...
 
 sleep 10
 
-(cd ./helm/openwhisk;./deploy.sh)
-
-echo deployed openwhisk ...
-
-sleep 10
-
 (cd ./helm/jupyterhub;./deploy.sh)
 
 echo deployed jupyterhub ...
-
-sleep 10
-
-(cd ./helm/airflow;./deploy.sh)
-
-echo deployed airflow ...
-
 
 
 
