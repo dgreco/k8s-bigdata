@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#kubectl get namespace minio-operator >& /dev/null
+kubectl get namespace minio-operator >& /dev/null
 
-#if [ $? -eq 1 ]
-#then
-#  kubectl create namespace minio-operator
-#fi
+if [ $? -eq 1 ]
+then
+  kubectl create namespace minio-operator
+fi
 
 ../../scripts/templater.sh ../values/values-minio.yaml.template -s -f ../../config > ../values/values-minio.yaml
 
